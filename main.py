@@ -143,7 +143,7 @@ def upload(filename, setting):
             extra_args[key] = args[key]
 
     logger.info(
-        'Going to upload s3://%s/%s, args = %s',
+        'Upload s3://%s/%s, args = %s',
         setting['bucket'],
         setting['key'],
         extra_args
@@ -178,13 +178,11 @@ def process(filename, setting):
 
 def setup_path():
 
-    os.environ['PATH'] = os.path.curdir + os.pathsep + os.environ['PATH']
-    logger.info(os.environ['PATH'])
+    cwd = os.path.abspath(os.path.curdir)
+    os.environ['PATH'] = cwd + os.pathsep + os.environ['PATH']
 
 
 def lambda_handler(event, context):
-
-    setup_path()
 
     bucket = event['Records'][0]['s3']['bucket']['name']
     key_name = event['Records'][0]['s3']['object']['key']
@@ -196,6 +194,9 @@ def lambda_handler(event, context):
         logger.warn('Cannot find any config object of `%s`', key_name)
         return
 
+    setup_path()
+
+    raised_exc = None
     _, ext = os.path.splitext(key_name)
     with closing(NamedTemporaryFile(suffix=ext)) as original_file:
         download_s3_object(bucket, key_name, original_file.name)
@@ -207,4 +208,7 @@ def lambda_handler(event, context):
                     process(original_file.name, output_setting)
                 except Exception as e:
                     logger.exception(e)
+                    raised_exc = e
 
+    if raised_exc is not None:
+        raise raised_exc
