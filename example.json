@@ -1,0 +1,23 @@
+[
+    {
+        "bucket": "articles",
+        "key_regexp": "main_images/1200/(.+).jpg",
+        "outputs": [
+            {
+                "width": 700,
+                "key": "main_images/700/{0}.jpg",
+                "attrs": {
+                    "ACL": "public-read",
+                    "CacheControl": "max-age=86400"
+                }
+            },
+            {
+                "region": "ap-northeast-1",
+                "bucket": "magazines",
+                "key": "articles/1200/{0}.jpg",
+                "width": 1200
+            }
+        ]
+    }
+]
+
