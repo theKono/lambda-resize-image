@@ -2,6 +2,7 @@
 
 # standard library imports
 from contextlib import closing
+from copy import deepcopy
 import logging
 import mimetypes
 import os.path
@@ -51,7 +52,7 @@ def find_config_objects(bucket, key_name):
         if match_obj is None:
             continue
 
-        c = c.copy()
+        c = deepcopy(c)
 
         for output in c['outputs']:
             if 'bucket' not in output:
