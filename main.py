@@ -137,7 +137,7 @@ def upload(filename, setting):
         s3 = boto3.client('s3')
 
     args = guess_mimetype(filename)
-    extra_args = get_put_object_params(setting.get('attr'))
+    extra_args = get_put_object_params(setting.get('attrs'))
 
     for key in args:
         if key not in extra_args:
